@@ -1,0 +1,86 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+const app = require("../app");// 应用的启动文件
+const debug = require("debug")("react-ant-admin-server:server");// 调试工具
+const http = require("http");// * as http from "http";
+const config = require("../common");// 配置文件
+
+/**
+ * Get port from environment and store in Express.
+ */
+const port = normalizePort(config.port);// 获取端口号
+app.set("port", port);// 设置端口号
+
+/**
+ * Create HTTP server.
+ */
+const server = http.createServer(app);// 创建http服务器
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port, config.host, () => {// 监听端口
+  console.log(`server is starting: https://${config.host}:${port}`);// 打印启动信息 HTTP 链接不安全
+});
+server.on("error", onError);// 错误处理
+server.on("listening", onListening);// 监听事件
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {// 解析端口号
+  const port = parseInt(val, 10);// 转换为数字
+
+  if (isNaN(port)) {// 是否为数字
+    // named pipe
+    return val;// 返回命名
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;// 返回端口号
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {// 错误处理 错误处理
+  if (error.syscall !== "listen") {// 是否为监听错误
+    throw error;
+  }
+
+  const bind = typeof port === "string" ? "Pipe " + port : "Port " + port;// 绑定端口
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {// 错误类型
+    case "EACCES":// 权限错误
+      console.error(bind + " requires elevated privileges");// 打印错误信息
+      process.exit(1);// 退出程序
+      break;
+    case "EADDRINUSE":// 地址已被占用
+      console.error(bind + " is already in use");// 打印错误信息
+      process.exit(1);// 退出程序
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {// 监听事件
+  const addr = server.address();// 获取地址
+  const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;// 绑定地址
+  debug("Listening on " + bind);// 打印地址
+}
